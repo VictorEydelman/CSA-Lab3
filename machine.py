@@ -211,6 +211,7 @@ class ControlUnit:
             self.data_path.signal_tick()
             self.data_path.interruption_controller()
 
+
     def without_arg(self, opcode):
         if opcode == Opcode.RET:
             self.pc = self.stack_return.pop()
