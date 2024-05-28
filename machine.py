@@ -39,16 +39,22 @@ class DataPath:
         self.tick += 1
 
     def interruption_controller(self):
-        num = self.tick
-        while num <= self.tick:
-            while num in self.input_address and self.interruption:
-                a = self.input_token[self.input_address.index(num)]
+        if self.input_address:
+            if self.tick in self.input_address and self.interruption and self.tick <= max(self.input_address):
+                a = self.input_token[self.input_address.index(self.tick)]
+                self.input_address[self.input_address.index(self.tick)] = 0
                 self.memory[0] = {"opcode": self.memory[0]["opcode"], "arg": self.memory[0]["arg"] + a}
                 self.signal_tick()
                 self.memory[1] = {"opcode": self.memory[0]["opcode"], "arg": ord(a) % (2**32)}
-                self.input_address[self.input_address.index(num)] = 0
+                print(self.input_address, self.tick)
                 self.signal_tick()
-            num += 1
+                self.interruption_controller()
+            elif self.tick > max(self.input_address) > 0:
+                self.input_address = [0]
+                self.memory[0] = {"opcode": self.memory[0]["opcode"], "arg": self.memory[0]["arg"] + "\n"}
+                self.signal_tick()
+                self.memory[1] = {"opcode": self.memory[0]["opcode"], "arg": ord("\n") % (2**32)}
+                self.signal_tick()
 
     def instructions_in_memory(self, code: list):
         for mem in code:
@@ -77,6 +83,7 @@ class DataPath:
         elif operation == "add":
             self.alu = int(left) + int(right)
         elif operation == "sub":
+            print(left,right)
             self.alu = int(right) - int(left)
         elif operation == "mul":
             self.alu = int(left) * int(right)
@@ -100,7 +107,7 @@ class DataPath:
                 self.alu = str(right)
                 self.memory[int(left)] = {
                     "opcode": self.memory[int(left)]["opcode"],
-                    "arg": str(self.memory[int(left)]["arg"]) + str(right),
+                    "arg": str(self.memory[int(left)]["arg"]) + str(right)
                 }
 
     def in_alu(self, operation, left_sel=None, right_sel=None):
@@ -122,17 +129,13 @@ class DataPath:
         ):
             self.operation_in_alu(operation, left, right)
         elif operation == "store":
-            i = 0
-            symbol = int(self.memory[left + i]["arg"])
-            while symbol != 0:
-                self.signal_tick()
-                self.interruption_controller()
-                self.alu = symbol
-                self.memory[2]["arg"] += chr(symbol)
-                self.signal_tick()
-                self.interruption_controller()
-                i += 1
-                symbol = int(self.memory[left + i]["arg"])
+            symbol = int(self.memory[left]["arg"])
+            self.signal_tick()
+            self.interruption_controller()
+            self.alu = symbol
+            self.memory[2]["arg"] += chr(symbol)
+            self.signal_tick()
+            self.interruption_controller()
         else:
             self.in_alu_with_memory(operation, left, right)
         self.flag()
@@ -245,6 +248,8 @@ class ControlUnit:
 
     def branching(self, opcode, arg):
         if opcode == Opcode.JMP:
+            print(self.data_path.memory[16])
+            print(self.data_path.stack_data)
             self.pc = arg - 1
             self.data_path.signal_tick()
             self.data_path.interruption_controller()
@@ -267,6 +272,7 @@ class ControlUnit:
 
     def push_pop_stack(self, opcode, arg):
         if opcode == Opcode.PUSH_ADDR:
+            print(self.data_path.stack_data)
             self.data_path.signal_tick()
             self.data_path.interruption_controller()
             self.data_path.to_stack(arg)
@@ -276,6 +282,7 @@ class ControlUnit:
             self.data_path.signal_stack()
             self.data_path.signal_tick()
             self.data_path.interruption_controller()
+            print(self.data_path.stack_data)
         elif opcode == Opcode.PUSH:
             self.data_path.signal_tick()
             self.data_path.interruption_controller()
@@ -299,6 +306,7 @@ class ControlUnit:
     def instruction_decoder(self):
         ir = self.data_path.memory[self.pc]
         opcode = ir["opcode"]
+        print(self.data_path.memory[16:19])
         if (
             opcode == Opcode.JMP
             or opcode == Opcode.JZ
@@ -320,22 +328,17 @@ class ControlUnit:
             self.data_path.signal_tick()
             self.data_path.interruption_controller()
         elif opcode == Opcode.STORE:
-            arg = ir["arg"]
-            if arg != "":
-                self.data_path.to_stack(arg)
-                self.data_path.signal_tick()
-                self.data_path.interruption_controller()
-                self.data_path.in_alu("store", left_sel="stack")
-                self.data_path.signal_tick()
-                self.data_path.interruption_controller()
-            else:
-                self.data_path.to_stack(2)
-                self.data_path.signal_tick()
-                self.data_path.interruption_controller()
-                self.data_path.in_alu("to_memory", left_sel="stack", right_sel="stack")
-                self.data_path.signal_stack()
-                self.data_path.signal_tick()
-                self.data_path.interruption_controller()
+            self.data_path.in_alu("from_memory", left_sel="stack")
+            self.data_path.signal_tick()
+            self.data_path.interruption_controller()
+            self.data_path.signal_stack()
+            self.data_path.to_stack(2)
+            self.data_path.signal_tick()
+            self.data_path.interruption_controller()
+            self.data_path.in_alu("to_memory", left_sel="stack", right_sel="stack")
+            self.data_path.signal_stack()
+            self.data_path.signal_tick()
+            self.data_path.interruption_controller()
         else:
             self.without_arg(opcode)
         self.pc += 1
@@ -378,8 +381,6 @@ def main(program_file, input_file):
             for num, char in t:
                 input_address.append(num)
                 input_token.append(char)
-            input_address.append(input_address[-1])
-            input_token.append("\n")
 
     output, instr, tick = simulation(code, input_token, input_address, 256, 1000)
     print("".join(output))
