@@ -46,7 +46,6 @@ class DataPath:
                 self.memory[0] = {"opcode": self.memory[0]["opcode"], "arg": self.memory[0]["arg"] + a}
                 self.signal_tick()
                 self.memory[1] = {"opcode": self.memory[0]["opcode"], "arg": ord(a) % (2**32)}
-                print(self.input_address, self.tick)
                 self.signal_tick()
                 self.interruption_controller()
             elif self.tick > max(self.input_address) > 0:
@@ -83,7 +82,6 @@ class DataPath:
         elif operation == "add":
             self.alu = int(left) + int(right)
         elif operation == "sub":
-            print(left,right)
             self.alu = int(right) - int(left)
         elif operation == "mul":
             self.alu = int(left) * int(right)
@@ -107,7 +105,7 @@ class DataPath:
                 self.alu = str(right)
                 self.memory[int(left)] = {
                     "opcode": self.memory[int(left)]["opcode"],
-                    "arg": str(self.memory[int(left)]["arg"]) + str(right)
+                    "arg": str(self.memory[int(left)]["arg"]) + str(right),
                 }
 
     def in_alu(self, operation, left_sel=None, right_sel=None):
@@ -129,13 +127,17 @@ class DataPath:
         ):
             self.operation_in_alu(operation, left, right)
         elif operation == "store":
-            symbol = int(self.memory[left]["arg"])
-            self.signal_tick()
-            self.interruption_controller()
-            self.alu = symbol
-            self.memory[2]["arg"] += chr(symbol)
-            self.signal_tick()
-            self.interruption_controller()
+            i = 0
+            symbol = int(self.memory[left + i]["arg"])
+            while symbol != 0:
+                self.signal_tick()
+                self.interruption_controller()
+                self.alu = symbol
+                self.memory[2]["arg"] += chr(symbol)
+                self.signal_tick()
+                self.interruption_controller()
+                i += 1
+                symbol = int(self.memory[left + i]["arg"])
         else:
             self.in_alu_with_memory(operation, left, right)
         self.flag()
@@ -248,8 +250,6 @@ class ControlUnit:
 
     def branching(self, opcode, arg):
         if opcode == Opcode.JMP:
-            print(self.data_path.memory[16])
-            print(self.data_path.stack_data)
             self.pc = arg - 1
             self.data_path.signal_tick()
             self.data_path.interruption_controller()
@@ -272,7 +272,6 @@ class ControlUnit:
 
     def push_pop_stack(self, opcode, arg):
         if opcode == Opcode.PUSH_ADDR:
-            print(self.data_path.stack_data)
             self.data_path.signal_tick()
             self.data_path.interruption_controller()
             self.data_path.to_stack(arg)
@@ -282,7 +281,6 @@ class ControlUnit:
             self.data_path.signal_stack()
             self.data_path.signal_tick()
             self.data_path.interruption_controller()
-            print(self.data_path.stack_data)
         elif opcode == Opcode.PUSH:
             self.data_path.signal_tick()
             self.data_path.interruption_controller()
@@ -306,7 +304,6 @@ class ControlUnit:
     def instruction_decoder(self):
         ir = self.data_path.memory[self.pc]
         opcode = ir["opcode"]
-        print(self.data_path.memory[16:19])
         if (
             opcode == Opcode.JMP
             or opcode == Opcode.JZ
@@ -328,17 +325,22 @@ class ControlUnit:
             self.data_path.signal_tick()
             self.data_path.interruption_controller()
         elif opcode == Opcode.STORE:
-            self.data_path.in_alu("from_memory", left_sel="stack")
-            self.data_path.signal_tick()
-            self.data_path.interruption_controller()
-            self.data_path.signal_stack()
-            self.data_path.to_stack(2)
-            self.data_path.signal_tick()
-            self.data_path.interruption_controller()
-            self.data_path.in_alu("to_memory", left_sel="stack", right_sel="stack")
-            self.data_path.signal_stack()
-            self.data_path.signal_tick()
-            self.data_path.interruption_controller()
+            arg = ir["arg"]
+            if arg != "":
+                self.data_path.to_stack(arg)
+                self.data_path.signal_tick()
+                self.data_path.interruption_controller()
+                self.data_path.in_alu("store", left_sel="stack")
+                self.data_path.signal_tick()
+                self.data_path.interruption_controller()
+            else:
+                self.data_path.to_stack(2)
+                self.data_path.signal_tick()
+                self.data_path.interruption_controller()
+                self.data_path.in_alu("to_memory", left_sel="stack", right_sel="stack")
+                self.data_path.signal_stack()
+                self.data_path.signal_tick()
+                self.data_path.interruption_controller()
         else:
             self.without_arg(opcode)
         self.pc += 1

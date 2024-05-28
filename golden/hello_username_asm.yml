@@ -42,6 +42,7 @@ in_source: |-
       load_symbol
       push 10
       sub
+      di
       jz print
       jmp _start
   print:
@@ -58,85 +59,51 @@ in_source: |-
 in_stdin: |-
   [(1,'V'),(5,'i'),(7,'k'),(14,'o'),(15,'r')]
 out_code: |-
-  [{"_start": 37},
-  {"index": 4, "opcode": "word", "arg": "60"},
-  {"index": 5, "opcode": "word", "arg": "32"},
-  {"index": 6, "opcode": "word", "arg": "0"},
-  {"index": 7, "opcode": "word", "arg": "62"},
-  {"index": 8, "opcode": "word", "arg": "32"},
-  {"index": 9, "opcode": "word", "arg": "0"},
+  [{"_start": 15},
+  {"index": 4, "opcode": "word", "arg": "72"},
+  {"index": 5, "opcode": "word", "arg": "101"},
+  {"index": 6, "opcode": "word", "arg": "108"},
+  {"index": 7, "opcode": "word", "arg": "108"},
+  {"index": 8, "opcode": "word", "arg": "111"},
+  {"index": 9, "opcode": "word", "arg": "32"},
   {"index": 10, "opcode": "word", "arg": "87"},
-  {"index": 11, "opcode": "word", "arg": "104"},
-  {"index": 12, "opcode": "word", "arg": "97"},
-  {"index": 13, "opcode": "word", "arg": "116"},
-  {"index": 14, "opcode": "word", "arg": "32"},
-  {"index": 15, "opcode": "word", "arg": "105"},
-  {"index": 16, "opcode": "word", "arg": "115"},
-  {"index": 17, "opcode": "word", "arg": "32"},
-  {"index": 18, "opcode": "word", "arg": "121"},
-  {"index": 19, "opcode": "word", "arg": "111"},
-  {"index": 20, "opcode": "word", "arg": "117"},
-  {"index": 21, "opcode": "word", "arg": "114"},
-  {"index": 22, "opcode": "word", "arg": "32"},
-  {"index": 23, "opcode": "word", "arg": "110"},
-  {"index": 24, "opcode": "word", "arg": "97"},
-  {"index": 25, "opcode": "word", "arg": "109"},
-  {"index": 26, "opcode": "word", "arg": "101"},
-  {"index": 27, "opcode": "word", "arg": "63"},
-  {"index": 28, "opcode": "word", "arg": "10"},
-  {"index": 29, "opcode": "word", "arg": "0"},
-  {"index": 30, "opcode": "word", "arg": "72"},
-  {"index": 31, "opcode": "word", "arg": "101"},
-  {"index": 32, "opcode": "word", "arg": "108"},
-  {"index": 33, "opcode": "word", "arg": "108"},
-  {"index": 34, "opcode": "word", "arg": "111"},
-  {"index": 35, "opcode": "word", "arg": "44"},
-  {"index": 36, "opcode": "word", "arg": "32"},
-  {"index": 37, "opcode": "word", "arg": "0"},
-  {"index": 39, "opcode": "ei", "arg": ""},
-  {"index": 40, "opcode": "load_symbol", "arg": ""},
-  {"index": 41, "opcode": "push", "arg": "10"},
-  {"index": 42, "opcode": "sub", "arg": ""},
-  {"index": 43, "opcode": "jz", "arg": 45},
-  {"index": 44, "opcode": "jmp", "arg": 38},
-  {"index": 45, "opcode": "store", "arg": 7},
-  {"index": 46, "opcode": "store", "arg": 10},
-  {"index": 47, "opcode": "store", "arg": 4},
-  {"index": 48, "opcode": "load", "arg": ""},
-  {"index": 49, "opcode": "store", "arg": ""},
-  {"index": 50, "opcode": "store", "arg": 7},
-  {"index": 51, "opcode": "store", "arg": 30},
-  {"index": 52, "opcode": "load", "arg": ""},
-  {"index": 53, "opcode": "store", "arg": ""},
-  {"index": 54, "opcode": "halt", "arg": ""}]
+  {"index": 11, "opcode": "word", "arg": "111"},
+  {"index": 12, "opcode": "word", "arg": "114"},
+  {"index": 13, "opcode": "word", "arg": "108"},
+  {"index": 14, "opcode": "word", "arg": "100"},
+  {"index": 15, "opcode": "word", "arg": "0"},
+  {"index": 17, "opcode": "store", "arg": 4},
+  {"index": 18, "opcode": "halt", "arg": ""}]
 out_stdout: |-
   > What is your name?
-  < Vikor
-  > Hello, Vikor
-
-  instr_counter: 23
+  < Viko
+  > Hello, Viko
+  
+  instr_counter: 25
   ticks: 116
 out_log: |-
   DEBUG   machine:simulation    PC: 39 ticks: 0 interruption: True in MEM_OUT: {'opcode': 'ei', 'arg': ''} ei
   DEBUG   machine:simulation    PC: 40 ticks: 3 interruption: True in MEM_OUT: {'opcode': 'load_symbol', 'arg': ''} load_symbol
-  DEBUG   machine:simulation    PC: 41 ticks: 10 interruption: True in MEM_OUT: {'opcode': 'push', 'arg': '10'} push 10
+  DEBUG   machine:simulation    PC: 41 ticks: 10 interruption: True in MEM_OUT: {'opcode': 'push', 'arg': '10'} push 10        
   DEBUG   machine:simulation    PC: 42 ticks: 12 interruption: True in MEM_OUT: {'opcode': 'sub', 'arg': ''} sub
-  DEBUG   machine:simulation    PC: 43 ticks: 20 interruption: True in MEM_OUT: {'opcode': 'jz', 'arg': 45} jz 45
-  DEBUG   machine:simulation    PC: 44 ticks: 20 interruption: True in MEM_OUT: {'opcode': 'jmp', 'arg': 38} jmp 38
-  DEBUG   machine:simulation    PC: 38 ticks: 21 interruption: True in MEM_OUT: {'opcode': 'nop', 'arg': 0} nop 0
-  DEBUG   machine:simulation    PC: 39 ticks: 21 interruption: True in MEM_OUT: {'opcode': 'ei', 'arg': ''} ei
-  DEBUG   machine:simulation    PC: 40 ticks: 22 interruption: True in MEM_OUT: {'opcode': 'load_symbol', 'arg': ''} load_symbol
-  DEBUG   machine:simulation    PC: 41 ticks: 25 interruption: True in MEM_OUT: {'opcode': 'push', 'arg': '10'} push 10
-  DEBUG   machine:simulation    PC: 42 ticks: 27 interruption: True in MEM_OUT: {'opcode': 'sub', 'arg': ''} sub
-  DEBUG   machine:simulation    PC: 43 ticks: 29 interruption: True in MEM_OUT: {'opcode': 'jz', 'arg': 45} jz 45
-  DEBUG   machine:simulation    PC: 45 ticks: 30 interruption: True in MEM_OUT: {'opcode': 'store', 'arg': 7} store 7
-  DEBUG   machine:simulation    PC: 46 ticks: 36 interruption: True in MEM_OUT: {'opcode': 'store', 'arg': 10} store 10
-  DEBUG   machine:simulation    PC: 47 ticks: 76 interruption: True in MEM_OUT: {'opcode': 'store', 'arg': 4} store 4
-  DEBUG   machine:simulation    PC: 48 ticks: 82 interruption: True in MEM_OUT: {'opcode': 'load', 'arg': ''} load
-  DEBUG   machine:simulation    PC: 49 ticks: 85 interruption: True in MEM_OUT: {'opcode': 'store', 'arg': ''} store
-  DEBUG   machine:simulation    PC: 50 ticks: 88 interruption: True in MEM_OUT: {'opcode': 'store', 'arg': 7} store 7
-  DEBUG   machine:simulation    PC: 51 ticks: 94 interruption: True in MEM_OUT: {'opcode': 'store', 'arg': 30} store 30
-  DEBUG   machine:simulation    PC: 52 ticks: 110 interruption: True in MEM_OUT: {'opcode': 'load', 'arg': ''} load
-  DEBUG   machine:simulation    PC: 53 ticks: 113 interruption: True in MEM_OUT: {'opcode': 'store', 'arg': ''} store
-  DEBUG   machine:simulation    PC: 54 ticks: 116 interruption: True in MEM_OUT: {'opcode': 'halt', 'arg': ''} halt
-  INFO    machine:simulation    output_buffer: '> What is your name?\n< Vikor\n> Hello, Vikor\n'
+  DEBUG   machine:simulation    PC: 43 ticks: 18 interruption: True in MEM_OUT: {'opcode': 'di', 'arg': ''} di
+  DEBUG   machine:simulation    PC: 44 ticks: 19 interruption: False in MEM_OUT: {'opcode': 'jz', 'arg': 46} jz 46
+  DEBUG   machine:simulation    PC: 45 ticks: 19 interruption: False in MEM_OUT: {'opcode': 'jmp', 'arg': 38} jmp 38
+  DEBUG   machine:simulation    PC: 38 ticks: 20 interruption: False in MEM_OUT: {'opcode': 'nop', 'arg': 0} nop 0
+  DEBUG   machine:simulation    PC: 39 ticks: 20 interruption: False in MEM_OUT: {'opcode': 'ei', 'arg': ''} ei
+  DEBUG   machine:simulation    PC: 40 ticks: 21 interruption: True in MEM_OUT: {'opcode': 'load_symbol', 'arg': ''} load_symbol
+  DEBUG   machine:simulation    PC: 41 ticks: 24 interruption: True in MEM_OUT: {'opcode': 'push', 'arg': '10'} push 10
+  DEBUG   machine:simulation    PC: 42 ticks: 26 interruption: True in MEM_OUT: {'opcode': 'sub', 'arg': ''} sub
+  DEBUG   machine:simulation    PC: 43 ticks: 28 interruption: True in MEM_OUT: {'opcode': 'di', 'arg': ''} di
+  DEBUG   machine:simulation    PC: 44 ticks: 29 interruption: False in MEM_OUT: {'opcode': 'jz', 'arg': 46} jz 46
+  DEBUG   machine:simulation    PC: 46 ticks: 30 interruption: False in MEM_OUT: {'opcode': 'store', 'arg': 7} store 7
+  DEBUG   machine:simulation    PC: 47 ticks: 36 interruption: False in MEM_OUT: {'opcode': 'store', 'arg': 10} store 10
+  DEBUG   machine:simulation    PC: 48 ticks: 76 interruption: False in MEM_OUT: {'opcode': 'store', 'arg': 4} store 4
+  DEBUG   machine:simulation    PC: 49 ticks: 82 interruption: False in MEM_OUT: {'opcode': 'load', 'arg': ''} load
+  DEBUG   machine:simulation    PC: 50 ticks: 85 interruption: False in MEM_OUT: {'opcode': 'store', 'arg': ''} store
+  DEBUG   machine:simulation    PC: 51 ticks: 88 interruption: False in MEM_OUT: {'opcode': 'store', 'arg': 7} store 7
+  DEBUG   machine:simulation    PC: 52 ticks: 94 interruption: False in MEM_OUT: {'opcode': 'store', 'arg': 30} store 30
+  DEBUG   machine:simulation    PC: 53 ticks: 110 interruption: False in MEM_OUT: {'opcode': 'load', 'arg': ''} load
+  DEBUG   machine:simulation    PC: 54 ticks: 113 interruption: False in MEM_OUT: {'opcode': 'store', 'arg': ''} store
+  DEBUG   machine:simulation    PC: 55 ticks: 116 interruption: False in MEM_OUT: {'opcode': 'halt', 'arg': ''} halt
+  INFO    machine:simulation    output_buffer: '> What is your name?\n< Viko\n> Hello, Viko\n'
